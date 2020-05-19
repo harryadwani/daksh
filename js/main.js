@@ -21,6 +21,8 @@ let startTime = null;
 // Define peer connections, streams and video elements.
 const localVideo = document.getElementById('localVideo');
 const remoteVideo = document.getElementById('remoteVideo');
+const video_el = document.getElementById('video_el');
+
 
 let localStream;
 let remoteStream;
