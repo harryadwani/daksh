@@ -258,10 +258,21 @@ function hangupAction() {
   trace('Ending call.');
 }
 
+
+function screenShareAction() {
+  let displayMediaOptions = {video: true, audio: false};
+  navigator.mediaDevices.getDisplayMedia(displayMediaOptions)
+  .then(function(stream){
+    video_el.srcObject = stream;
+  })
+}
+
+
 // Add click event handlers for buttons.
 startButton.addEventListener('click', startAction);
 callButton.addEventListener('click', callAction);
 hangupButton.addEventListener('click', hangupAction);
+screenShareButton.addEventListener('click',screenShareAction);
 
 
 // Define helper functions.
