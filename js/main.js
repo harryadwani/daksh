@@ -7,7 +7,8 @@
 
 
 const mediaStreamConstraints = {
-  video: true
+  video: true,
+  audio:true
 }
 
 // Set up to exchange only video.
@@ -19,9 +20,9 @@ const offerOptions = {
 let startTime = null;
 
 // Define peer connections, streams and video elements.
-const localVideo = document.getElementById('localVideo');
-const remoteVideo = document.getElementById('remoteVideo');
-const video_el = document.getElementById('video_el');
+                      const localVideo = document.getElementById('localVideo');
+                      const remoteVideo = document.getElementById('remoteVideo');
+                      const video_el = document.getElementById('video_el');
 
 
 let localStream;
@@ -187,9 +188,16 @@ function createdAnswer(description) {
 // Define and add behavior to buttons.
 
 // Define action buttons.
-const startButton = document.getElementById('startButton');
-const callButton = document.getElementById('callButton');
-const hangupButton = document.getElementById('hangupButton');
+                    const startButton = document.getElementById('startButton');
+                    const callButton = document.getElementById('callButton');
+                    const hangupButton = document.getElementById('hangupButton');
+                    const unmuteC1 = document.getElementById('unmuteC1Button');
+                    const muteC1 = document.getElementById('muteC1Button');
+                    const unmuteC2 = document.getElementById('unmuteC2Button');
+                    const muteC2 = document.getElementById('muteC2Button');
+
+
+
 
 // Set up initial action buttons status: disable call and hangup.
 callButton.disabled = true;
@@ -269,12 +277,34 @@ function screenShareAction() {
   })
 }
 
+function unmuteC1Action() {
+  localStream.getAudioTracks()[0].enabled = true;
+}
+
+function muteC1Action() {
+  localStream.getAudioTracks()[0].enabled = false;
+}
+
+function unmuteC2Action() {
+  remoteStream.getAudioTracks()[0].enabled = true;
+}
+
+function muteC2Action() {
+  remoteStream.getAudioTracks()[0].enabled = false;
+}
+
 
 // Add click event handlers for buttons.
 startButton.addEventListener('click', startAction);
 callButton.addEventListener('click', callAction);
 hangupButton.addEventListener('click', hangupAction);
 screenShareButton.addEventListener('click',screenShareAction);
+unmuteC1.addEventListener('click',unmuteC1Action);
+muteC1.addEventListener('click',muteC1Action);
+unmuteC2.addEventListener('click',unmuteC2Action);
+muteC2.addEventListener('click',muteC2Action);
+
+
 
 
 // Define helper functions.
