@@ -1,9 +1,139 @@
 'use strict';
+//var app = require("express")(); 
 
 // Set up media stream constant and parameters.
 
 // In this codelab, you will be streaming video only: "video: true".
 // Audio will not be streamed because it is set to "audio: false" by default.
+const localVideo = document.getElementById('localVideo');
+
+const remoteVideo = document.getElementById('remoteVideo');
+document.getElementById('remoteVideo').hidden=true;
+
+const video_el = document.getElementById('video_el');
+ let chromaToggle=0;
+function gsToggle() {
+  if(chromaToggle==0) {
+    chromaToggle=1;
+    computeFrame();
+    console.log(chromaToggle);
+
+  }
+  else { 
+    chromaToggle=0;
+    console.log(chromaToggle);
+    computeRemoteVideo();
+  }
+}
+
+
+ let video,video2,c1,ctx1,c_tmp,ctx_tmp; 
+
+function computeRemoteVideo() {
+  c1 = document.getElementById('output-canvas');
+  ctx1 = c1.getContext('2d');
+
+  c_tmp = document.createElement('canvas');
+  c_tmp.setAttribute('width', 320);
+  c_tmp.setAttribute('height',240);
+  ctx_tmp = c_tmp.getContext('2d');
+
+ctx_tmp.drawImage(remoteVideo, 0, 0, 320 , 240 );
+let frame = ctx_tmp.getImageData(0, 0, 320 , 240 );
+  
+  ctx1.putImageData(frame, 0, 0 );
+  setTimeout(computeRemoteVideo, 0);
+
+}
+
+function computeFrame() {
+
+if(chromaToggle==0)
+{
+  return;
+}
+  
+  // c1 = document.getElementById('output-canvas');
+  //       ctx1 = c1.getContext('2d');
+
+  //  c_tmp = document.createElement('canvas');
+  //  c_tmp.setAttribute('width', 320);
+  //  c_tmp.setAttribute('height',240);
+  //  ctx_tmp = c_tmp.getContext('2d');
+
+ctx_tmp.drawImage(remoteVideo, 0, 0, 320 , 240 );
+let frame = ctx_tmp.getImageData(0, 0, 320 , 240 );
+
+
+
+for (let i = 0; i < frame.data.length /4; i++) {
+let r = frame.data[i * 4 + 0];
+let g = frame.data[i * 4 + 1];
+let b = frame.data[i * 4 + 2];
+let a = frame.data[i * 4 + 3];
+
+var selectedR = 110;
+    var        selectedG = 154;
+       var     selectedB = 90;
+            if (r <= selectedR && g >= selectedG && b >= selectedB) {
+
+// if (r > 70 && r < 160 && g > 95 && g < 220 && b > 25 && b < 150) 
+// {  
+    frame.data[i * 4 + 0] = 0;
+    frame.data[i * 4 + 1] = 0;
+    frame.data[i * 4 + 2] = 0;
+    //frame.data[i * 4 + 3] = 0;
+}
+}
+
+
+for (var y = 0; y < frame.height; y++) {
+  for (var x = 0; x < frame.width; x++) {
+      var r = frame.data[((frame.width * y) + x) * 4];
+      var g = frame.data[((frame.width * y) + x) * 4 + 1];
+      var b = frame.data[((frame.width * y) + x) * 4 + 2];
+      var a = frame.data[((frame.width * y) + x) * 4 + 3];
+      if (frame.data[((frame.width * y) + x) * 4 + 3] != 0) {
+          var offsetYup = y - 1;
+          var offsetYdown = y + 1;
+          var offsetXleft = x - 1;
+          var offsetxRight = x + 1;
+          var change = false;
+          if (offsetYup > 0) {
+              if (frame.data[((frame.width * (y - 1)) + (x)) * 4 + 3] == 0) {
+                  change = true;
+              }
+          }
+          if (offsetYdown < frame.height) {
+              if (frame.data[((frame.width * (y + 1)) + (x)) * 4 + 3] == 0) {
+                  change = true;
+              }
+          }
+          if (offsetXleft > -1) {
+              if (frame.data[((frame.width * y) + (x - 1)) * 4 + 3] == 0) {
+                  change = true;
+              }
+          }
+          if (offsetxRight < frame.width) {
+              if (frame.data[((frame.width * y) + (x + 1)) * 4 + 3] == 0) {
+                  change = true;
+              }
+          }
+          if (change) {
+            var gray = (frame.data[((frame.width * y) + x) * 4 + 0] * .393) + (frame.data[((frame.width * y) + x) * 4 + 1] * .769) + (frame.data[((frame.width * y) + x) * 4 + 2] * .189);
+            frame.data[((frame.width * y) + x) * 4] = (gray * 0.2) + (imgBackgroundData.data[((frame.width * y) + x) * 4] * 0.9);
+            frame.data[((frame.width * y) + x) * 4 + 1] = (gray * 0.2) + (imgBackgroundData.data[((frame.width * y) + x) * 4 + 1] * 0.9);
+            frame.data[((frame.width * y) + x) * 4 + 2] = (gray * 0.2) + (imgBackgroundData.data[((frame.width * y) + x) * 4 + 2] * 0.9);
+            frame.data[((frame.width * y) + x) * 4 + 3] = 255;
+        }
+      }
+  }
+}
+
+ctx1.putImageData(frame, 0, 0);
+setTimeout(computeFrame, 0);
+}
+
 
 
 const mediaStreamConstraints = {
@@ -20,9 +150,8 @@ const offerOptions = {
 let startTime = null;
 
 // Define peer connections, streams and video elements.
-                      const localVideo = document.getElementById('localVideo');
-                      const remoteVideo = document.getElementById('remoteVideo');
-                      const video_el = document.getElementById('video_el');
+                    
+                    //  ctx_tmp = remoteVideo.getContext('2d');
 
 
 let localStream;
@@ -30,6 +159,7 @@ let remoteStream;
 
 let localPeerConnection;
 let remotePeerConnection;
+
 
 
 // Define MediaStreams callbacks.
@@ -78,8 +208,8 @@ function logResizedVideo(event) {
 }
 
 localVideo.addEventListener('loadedmetadata', logVideoLoaded);
-remoteVideo.addEventListener('loadedmetadata', logVideoLoaded);
-remoteVideo.addEventListener('onresize', logResizedVideo);
+ remoteVideo.addEventListener('loadedmetadata', logVideoLoaded);
+ remoteVideo.addEventListener('onresize', logResizedVideo);
 
 
 // Define RTC peer connection behavior.
@@ -193,8 +323,12 @@ function createdAnswer(description) {
                     const hangupButton = document.getElementById('hangupButton');
                     const unmuteC1 = document.getElementById('unmuteC1Button');
                     const muteC1 = document.getElementById('muteC1Button');
-                    const unmuteC2 = document.getElementById('unmuteC2Button');
-                    const muteC2 = document.getElementById('muteC2Button');
+                     const unmuteC2 = document.getElementById('unmuteC2Button');
+                     const muteC2 = document.getElementById('muteC2Button');
+                    const gsButton = document.getElementById('gs');
+                    const videoToggleButton1=document.getElementById('videoToggleButton1');
+                    const videoToggleButton2=document.getElementById('videoToggleButton2');
+
 
 
 
@@ -214,6 +348,12 @@ function startAction() {
 
 // Handles call button action: creates peer connection.
 function callAction() {
+  //computeFrame();
+  //console.log('chroma key'+chromaToggle);
+  // if(chromaToggle==1)
+    computeRemoteVideo();
+  // else
+  //  computeFrame();
   callButton.disabled = true;
   hangupButton.disabled = false;
 
@@ -259,6 +399,7 @@ function callAction() {
 
 // Handles hangup action: ends up call, closes connections and resets peers.
 function hangupAction() {
+remoteStream.getVideoTracks()[0].stop();
   localPeerConnection.close();
   remotePeerConnection.close();
   localPeerConnection = null;
@@ -292,6 +433,30 @@ function unmuteC2Action() {
 function muteC2Action() {
   remoteStream.getAudioTracks()[0].enabled = false;
 }
+let vdoToggle1=0;
+let vdoToggle2=0;
+
+function videoToggle1() {
+  if(vdoToggle1==0) {
+  localStream.getVideoTracks()[0].enabled=false;
+  vdoToggle1=1;
+  }
+  else {
+    localStream.getVideoTracks()[0].enabled=true;
+  vdoToggle1=0;
+  }
+}
+
+function videoToggle2() {
+  if(vdoToggle2==0) {
+  remoteStream.getVideoTracks()[0].enabled=false;
+  vdoToggle2=1;
+  }
+  else {
+    remoteStream.getVideoTracks()[0].enabled=true;
+  vdoToggle2=0;
+  }
+}
 
 
 // Add click event handlers for buttons.
@@ -301,8 +466,15 @@ hangupButton.addEventListener('click', hangupAction);
 screenShareButton.addEventListener('click',screenShareAction);
 unmuteC1.addEventListener('click',unmuteC1Action);
 muteC1.addEventListener('click',muteC1Action);
-unmuteC2.addEventListener('click',unmuteC2Action);
-muteC2.addEventListener('click',muteC2Action);
+ unmuteC2.addEventListener('click',unmuteC2Action);
+ muteC2.addEventListener('click',muteC2Action);
+gsButton.addEventListener('click',gsToggle);
+videoToggleButton1.addEventListener('click',videoToggle1);
+videoToggleButton2.addEventListener('click',videoToggle2);
+
+//ngsButton.addEventListener('click',callAction);
+
+
 
 
 
@@ -328,3 +500,6 @@ function trace(text) {
 
   console.log(now, text);
 }
+
+
+//app.listen(8080, () => { console.log("Server online on http://localhost:8080"); });

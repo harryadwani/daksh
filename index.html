@@ -12,9 +12,12 @@
 <body>
 
   <h1>Realtime communication with WebRTC</h1>
-  <video id="localVideo" autoplay playsinline></video>  <button id="unmuteC1Button">Unmute C1</button> <button id="muteC1Button">mute C1</button>
+  <video id="localVideo" autoplay playsinline></video> <button id="unmuteC1Button">Unmute C1</button> <button id="muteC1Button">mute C1</button>
+  <button id="videoToggleButton1">Start/Stop Video</button>
 
-  <video id="remoteVideo" autoplay playsinline></video> <button id="unmuteC2Button">Unmute C2</button> <button id="muteC2Button">mute C2</button>
+  <canvas id="output-canvas" height="240" ></canvas><button id="gs">Start Green Screen</button><button id="unmuteC2Button">Unmute C2</button> <button id="muteC2Button">mute C2</button> 
+  <!-- <video id="localVideo" autoplay playsinline></video> <button id="unmuteC1Button">Unmute C1</button> <button id="muteC1Button">mute C1</button> -->
+  <button id="videoToggleButton2">Start/Stop Video</button>
   <br>
   <p>Screen share video</p>
   <video id="video_el" autoplay playsinline></video>
@@ -26,12 +29,17 @@
   <button id="callButton">Call</button>
   <button id="hangupButton">Hang Up</button>
   <button id="screenShareButton">Screen Share</button>
+  
+
+
 
 
   </div>
-  
+  <video id="remoteVideo" autoplay playsinline></video>
+
   <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
   <script src="js/main.js"></script>
+<br>
 
 </body>
 
